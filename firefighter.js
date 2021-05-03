@@ -1,6 +1,6 @@
 class Firefighter{
     constructor(){
-        this.player = createSprite(200,450);
+        this.player = createSprite(200,510);
         
         this.player.addImage("fighter", firefighter);
     }

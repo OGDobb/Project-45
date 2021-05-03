@@ -12,6 +12,9 @@ var treesGroup;
 var fireGroup;
 var firefighter, fighterObject;
 
+var fireSpreadInterval = 200;
+var score = 0;
+
 
 function preload()
 {
@@ -52,34 +55,54 @@ function setup() {
 	treesGroup=new Group();
 	fireGroup=new Group();
 
-	for(var i = 0; i < 50; i++) {
+	for(var i = 0; i < 80; i++) {
 		generateTree();
 	}
 
-	for(var i = 0; i < 2; i++) {
-		generateFire(random(500, windowWidth - 20), random(450, windowHeight - 300));
+	for(var i = 0; i < 1; i++) {
+		generateFire(random(600, windowWidth - 20), random(500, windowHeight - 300));
 		
 	}
 
 	fighterObject = new Firefighter();
+	fighterObject.player.scale=0.2;
+	fighterObject.player.debug=true;
+	fighterObject.player.setCollider("rectangle", 80, 0, 600, 500);
+	
+
 
 }
 
 
 function draw() {
-  rectMode(CENTER);
+  background("white");
   background(ground);
 
 	fighterObject.moveThePlayer();
 	
-	if(frameCount % 300 === 0) {
+	if(frameCount % fireSpreadInterval === 0) {
 		spreadFire();
 	}
 	
-  
-	if(firefighter.isTouching(fireGroup)) {
-		fire.destroy();
+   if(fireSpreadInterval > 1 && frameCount % 10 === 0) {
+	fireSpreadInterval -= 1;
+   }
+	
+
+	if(fighterObject.player.isTouching(fireGroup)) {
+		for(var i = 0; i < fireGroup.length; i++) {
+			var f = fireGroup.get(i);
+			if(f.isTouching(fighterObject.player)) {
+				f.destroy();
+				score=score+1;
+			}
+		}
 	}
+	fill("black");
+	textSize(50);
+	text("Your score : " + score, 200, 100);
+	
+
   drawSprites();
  
 }
@@ -96,7 +119,7 @@ function spreadFire() {
 }
 
 function generateTree() {
-	var tree = createSprite(random(500, windowWidth - 20), random(450, windowHeight - 300), 20, 20);
+	var tree = createSprite(random(500, windowWidth - 50), random(450, windowHeight - 300), 20, 20);
 	
 	var r = Math.round(random(1, 6));
 	switch(r) {
@@ -116,7 +139,7 @@ function generateTree() {
 
 	tree.scale = 0.3;
 	 tree.debug = true;
-	tree.setCollider("rectangle", 0, 0, 200, 200);
+	tree.setCollider("rectangle", 0, 0, 500, 200);
 	treesGroup.add(tree);
 	
 }
@@ -134,7 +157,7 @@ function generateFire(x, y) {
 
 	fire.scale = 0.5;
 	fire.debug = true;
-	fire.setCollider("circle", 0, 0, 30);
+	fire.setCollider("rectangle", 0, 0, 90, 100);
 	fireGroup.add(fire);
 }
 
